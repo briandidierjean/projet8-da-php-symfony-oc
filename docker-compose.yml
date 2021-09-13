@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mysql:8.0.25
+    command: --default-authentication-plugin=mysql_native_password
+    platform: linux/x86_64
+    container_name: db_docker
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'todo_and_co'
+      MYSQL_ROOT_PASSWORD: 'todo_and_co'
+      MYSQL_USER: 'todo_and_co'
+      MYSQL_PASSWORD: 'todo_and_co'
+    networks:
+      - todo_and_co
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_docker
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8888:80
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: 'todo_and_co'
+      MYSQL_USER: 'todo_and_co'
+      MYSQL_PASSWORD: 'todo_and_co'
+    networks:
+      - todo_and_co
+
+  www:
+    build: ./
+    container_name: www_docker
+    ports:
+      - 8000:8000
+    environment:
+      BLACKFIRE_CLIENT_ID: # <Your Client ID>
+      BLACKFIRE_CLIENT_TOKEN: # <Your Client Token>
+    volumes:
+      - ./:/var/www/html
+    restart: always
+    networks:
+      - todo_and_co
+
+  blackfire:
+    image: blackfire/blackfire:2
+    container_name: blackfire_docker
+    ports: ["8307"]
+    environment:
+      BLACKFIRE_SERVER_ID: # <Your Server ID>
+      BLACKFIRE_SERVER_TOKEN: # <Your Server Token>
+    networks:
+      - todo_and_co
+
+volumes:
+  db_data:
+
+networks:
+  todo_and_co:
