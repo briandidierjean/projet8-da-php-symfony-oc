@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 
 namespace App\Entity;
 
@@ -17,6 +17,12 @@ class Task
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $user;
 
     /**
      * @ORM\Column(type="datetime")
@@ -49,6 +55,21 @@ class Task
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getUser()
+    {
+        if ($this->user === null) {
+            return 'Anonymous';
+        }
+        return $this->user;
+    }
+
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function getCreatedAt()
