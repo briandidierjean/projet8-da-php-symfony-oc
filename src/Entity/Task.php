@@ -68,8 +68,6 @@ class Task
     public function setUser($user)
     {
         $this->user = $user;
-
-        return $this;
     }
 
     public function getCreatedAt()
