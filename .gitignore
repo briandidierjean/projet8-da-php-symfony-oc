@@ -17,6 +17,7 @@
 ###> phpunit/phpunit ###
 /phpunit.xml
 .phpunit.result.cache
+/public/test-coverage
 ###< phpunit/phpunit ###
 
 ###> docker ###

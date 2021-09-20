@@ -114,6 +114,11 @@ class User implements UserInterface
         return $this->tasks;
     }
 
+    public function addTask($task)
+    {
+        $this->tasks[] = $task;
+    }
+
     public function eraseCredentials()
     {
     }
