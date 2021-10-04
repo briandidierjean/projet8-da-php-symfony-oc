@@ -33,7 +33,7 @@ class UserController extends Controller
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
-            if ($form->get('isAdmin')->getData()) {
+            if ($form->has('isAdmin') && $form->get('isAdmin')->getData()) {
                 $user->addRole('ROLE_ADMIN');
             }
 
@@ -61,7 +61,7 @@ class UserController extends Controller
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
-            if ($form->get('isAdmin')->getData()) {
+            if ($form->has('isAdmin') && $form->get('isAdmin')->getData()) {
                 $user->addRole('ROLE_ADMIN');
             }
 

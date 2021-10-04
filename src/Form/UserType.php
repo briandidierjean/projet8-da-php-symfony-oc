@@ -42,6 +42,7 @@ class UserType extends AbstractType
             $builder->add('isAdmin', CheckboxType::class, [
                 'label' => 'Administrateur ?',
                 'mapped' => false,
+                'required' => false,
             ]);
         }
     }
