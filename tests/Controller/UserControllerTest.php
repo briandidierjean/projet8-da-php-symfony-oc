@@ -3,18 +3,22 @@
 namespace App\Tests\Controller;
 
 use App\Entity\User;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class UserControllerTest extends WebTestCase
 {
     private $client;
+    private $entityManager;
 
     public function setUp(): void
     {
         $this->client = static::createClient();
+        $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
     }
 
     public function testUserListPage()
@@ -104,7 +108,7 @@ class UserControllerTest extends WebTestCase
     public function testUserEditPage()
     {
         $this->logInAsAdmin();
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
         $request = $this->client->request('GET', '/users/'. $user->getId() . '/edit');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -114,7 +118,7 @@ class UserControllerTest extends WebTestCase
     public function testUserEditPageAsUser()
     {
         $this->logInAsUser();
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
         $this->client->request('GET', '/users/'. $user->getId() . '/edit');
 
         static::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
@@ -122,7 +126,7 @@ class UserControllerTest extends WebTestCase
 
     public function testUserEditPageAsAnonymous()
     {
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
         $this->client->followRedirects();
         $request = $this->client->request('GET', '/users/'. $user->getId() . '/edit');
 
@@ -133,7 +137,7 @@ class UserControllerTest extends WebTestCase
     public function testUserEdition()
     {
         $this->logInAsAdmin();
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'nicolas']);
         $this->client->followRedirects();
         $request = $this->client->request('GET', '/users/'. $user->getId() . '/edit');
 
@@ -153,9 +157,9 @@ class UserControllerTest extends WebTestCase
 
     private function logInAsUser()
     {
-        $session = self::$container->get('session');
+        $session = static::$kernel->getContainer()->get('session');
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'brian']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'brian']);
 
         $firewallName = 'main';
         $firewallContext = 'main';
@@ -170,9 +174,9 @@ class UserControllerTest extends WebTestCase
 
     private function logInAsAdmin()
     {
-        $session = self::$container->get('session');
+        $session = static::$kernel->getContainer()->get('session');
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'admin']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'admin']);
 
         $firewallName = 'main';
         $firewallContext = 'main';

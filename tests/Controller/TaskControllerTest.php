@@ -12,10 +12,12 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 class TaskControllerTest extends WebTestCase
 {
     private $client;
+    private $entityManager;
 
     public function setUp(): void
     {
         $this->client = static::createClient();
+        $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
     }
 
     public function testTaskListPage()
@@ -75,7 +77,7 @@ class TaskControllerTest extends WebTestCase
     public function testTaskEditPage()
     {
         $this->logInAsUser();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 2']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 2']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/edit');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -85,7 +87,7 @@ class TaskControllerTest extends WebTestCase
     public function testTaskEditPageAsAnonymous()
     {
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 4']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 4']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/edit');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -95,7 +97,7 @@ class TaskControllerTest extends WebTestCase
     public function testTaskEditPageAsWrongUser()
     {
         $this->logInAsUser();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 5']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 5']);
         $this->client->request('GET', '/tasks/' . $task->getId() . '/edit');
 
         static::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
@@ -105,7 +107,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->logInAsUser();
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 2']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 2']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/edit');
 
         $form = $request->selectButton('Modifier')->form();
@@ -124,7 +126,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->logInAsAdmin();
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 4']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 4']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/edit');
 
         $form = $request->selectButton('Modifier')->form();
@@ -143,7 +145,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->logInAsUser();
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 3']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 3']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/toggle');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -156,7 +158,7 @@ class TaskControllerTest extends WebTestCase
     public function testTaskTogglingAsWrongUser()
     {
         $this->logInAsUser();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 5']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 5']);
         $this->client->request('GET', '/tasks/' . $task->getId() . '/toggle');
 
         static::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
@@ -166,7 +168,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->logInAsAdmin();
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 6']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 6']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/toggle');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -180,7 +182,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->logInAsUser();
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 1']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche n° 1']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/delete');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -193,7 +195,7 @@ class TaskControllerTest extends WebTestCase
     public function testTaskDeletionAsWrongUser()
     {
         $this->logInAsUser();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche anonyme']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche anonyme']);
         $this->client->request('GET', '/tasks/' . $task->getId() . '/delete');
 
         static::assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
@@ -203,7 +205,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->logInAsAdmin();
         $this->client->followRedirects();
-        $task = self::$container->get('doctrine')->getRepository(Task::class)->findOneBy(['title' => 'Tâche anonyme']);
+        $task = $this->entityManager->getRepository(Task::class)->findOneBy(['title' => 'Tâche anonyme']);
         $request = $this->client->request('GET', '/tasks/' . $task->getId() . '/delete');
 
         static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -215,9 +217,9 @@ class TaskControllerTest extends WebTestCase
 
     private function logInAsUser()
     {
-        $session = self::$container->get('session');
+        $session = static::$kernel->getContainer()->get('session');
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'brian']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'brian']);
 
         $firewallName = 'main';
         $firewallContext = 'main';
@@ -232,9 +234,9 @@ class TaskControllerTest extends WebTestCase
 
     private function logInAsAdmin()
     {
-        $session = self::$container->get('session');
+        $session = static::$kernel->getContainer()->get('session');
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'admin']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'admin']);
 
         $firewallName = 'main';
         $firewallContext = 'main';

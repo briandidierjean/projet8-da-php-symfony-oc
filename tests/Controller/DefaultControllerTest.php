@@ -11,10 +11,12 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 class DefaultControllerTest extends WebTestCase
 {
     private $client;
+    private $entityManager;
 
     public function setUp(): void
     {
         $this->client = static::createClient();
+        $this->entityManager = static::$kernel->getContainer()->get('doctrine')->getManager();
     }
 
     public function testHomepage()
@@ -37,9 +39,9 @@ class DefaultControllerTest extends WebTestCase
 
     private function logIn()
     {
-        $session = self::$container->get('session');
+        $session = static::$kernel->getContainer()->get('session');
 
-        $user = self::$container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'brian']);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['username' => 'brian']);
 
         $firewallName = 'main';
         $firewallContext = 'main';
