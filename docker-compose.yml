@@ -40,8 +40,6 @@ services:
     environment:
       BLACKFIRE_CLIENT_ID: # <Your Client ID>
       BLACKFIRE_CLIENT_TOKEN: # <Your Client Token>
-    volumes:
-      - ./:/var/www/html
     networks:
       - todo_and_co
 
