@@ -40,11 +40,12 @@ services:
     ports:
       - 8000:8000
     environment:
-      BLACKFIRE_CLIENT_ID: # <Your Client ID>
-      BLACKFIRE_CLIENT_TOKEN: # <Your Client Token>
+      BLACKFIRE_CLIENT_ID: # <Your Client ID> or remove it you do not need it.
+      BLACKFIRE_CLIENT_TOKEN: # <Your Client Token> or remove it you do not need it.
     networks:
       - todo_and_co
 
+# Removes this section if you do not need it.
   blackfire:
     image: blackfire/blackfire:2
     container_name: blackfire_docker
