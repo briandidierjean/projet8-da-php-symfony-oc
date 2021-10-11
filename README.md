@@ -38,4 +38,4 @@ with Symfony. You also need PHP 7.4, MySQL 8 and Composer.
 
 Now, ToDo & Co should be working.
 
-If you want to know more about contributing to the project consults `CONTRIBUTING.md`.
+If you want to know more about contributing to the project consults [CONTRIBUTING.md](CONTRIBUTING.md).
